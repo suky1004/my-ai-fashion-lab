@@ -3,248 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Sketch-to-Real 3D</title>
+    <title>AI 가상 피팅룸 - 학생 체험용</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
         body { font-family: 'Noto Sans KR', sans-serif; }
-        canvas { touch-action: none; }
+        .slider-hue {
+            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] p-4 md:p-8 text-slate-800">
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-10 text-center">
-            <div class="inline-flex items-center justify-center p-3 bg-indigo-100 text-indigo-600 rounded-2xl mb-4">
-                <i data-lucide="box" size="32"></i>
-            </div>
-            <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">AI Sketch-to-Real 3D</h1>
-            <p class="text-slate-500 max-w-lg mx-auto text-sm">아이디어를 그리고 실사 3D로 변환하여 다운로드 하세요.</p>
+<body class="bg-slate-50 p-4 md:p-8 text-slate-900 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-600 mb-2 tracking-tight">AI 가상 피팅룸</h1>
+            <p class="text-slate-500 text-sm md:text-base">선생님이 알려준 비밀번호를 입력하고 체험을 시작하세요!</p>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
-            <!-- Drawing Canvas -->
-            <div class="xl:col-span-4 space-y-6">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2"><i data-lucide="pen-tool" size="18"></i><h2 class="font-bold text-lg">직접 그리기</h2></div>
-                        <div class="flex gap-1">
-                            <button id="penBtn" class="p-2 rounded-lg bg-indigo-600 text-white"><i data-lucide="pen-tool" size="16"></i></button>
-                            <button id="eraserBtn" class="p-2 rounded-lg bg-slate-100"><i data-lucide="eraser" size="16"></i></button>
-                            <button id="clearBtn" class="p-2 rounded-lg bg-slate-100 hover:text-red-600"><i data-lucide="trash-2" size="16"></i></button>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 1. 인물 사진 섹션 -->
+            <div class="space-y-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2 mb-4 text-indigo-600">
+                        <i data-lucide="user" size="20"></i>
+                        <h2 class="font-semibold text-lg">1. 인물 사진</h2>
+                    </div>
+                    <div id="personDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 transition-all overflow-hidden bg-slate-50">
+                        <img id="personPreview" class="hidden h-full w-full object-cover" />
+                        <div id="personPlaceholder" class="text-center p-4">
+                            <i data-lucide="camera" class="mx-auto text-slate-400 mb-2" size="32"></i>
+                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
                         </div>
+                        <input type="file" id="personInput" class="hidden" accept="image/*" />
                     </div>
-                    <canvas id="sketchCanvas" width="400" height="400" class="w-full aspect-square border border-slate-200 rounded-2xl bg-white shadow-inner"></canvas>
-                    <button id="confirmBtn" class="w-full mt-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-sm flex items-center justify-center gap-2">스케치 확정 <i data-lucide="chevron-right" size="14"></i></button>
-                </div>
-            </div>
-            
-            <!-- Settings -->
-            <div class="xl:col-span-4 space-y-6">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 h-full flex flex-col">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2"><i data-lucide="palette" size="18"></i><h2 class="font-bold text-lg">변환할 스케치</h2></div>
-                        <button id="suggestBtn" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded-md flex items-center gap-1 hover:bg-indigo-700">
-                            <i data-lucide="sparkles" size="10"></i> 스타일 추천
-                        </button>
-                    </div>
-                    <div id="dropZone" class="relative flex-grow min-h-[250px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer border-slate-300 hover:border-indigo-300 transition-all overflow-hidden bg-slate-50">
-                        <img id="previewImg" class="hidden max-h-full max-w-full object-contain" />
-                        <div id="placeholder" class="text-center p-6">
-                            <i data-lucide="camera" class="mx-auto text-slate-300 mb-2" size="32"></i>
-                            <p class="text-slate-500 text-xs">사진 업로드</p>
-                        </div>
-                        <input type="file" id="fileInput" class="hidden" accept="image/*" />
-                    </div>
-                    <textarea id="promptInput" class="w-full mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none text-xs h-24 resize-none font-mono" placeholder="렌더링 스타일 (예: Blue silk dress, professional lighting...)"></textarea>
-                    <button id="transformBtn" class="w-full mt-4 py-4 rounded-xl font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 flex items-center justify-center gap-2 shadow-lg">
-                        <i data-lucide="wand-2" size="18"></i> 3D 변환 시작
-                    </button>
                 </div>
             </div>
 
-            <!-- Results -->
-            <div class="xl:col-span-4 space-y-6 flex flex-col">
-                <div class="bg-slate-900 rounded-3xl p-6 shadow-2xl flex-grow flex flex-col text-white">
+            <!-- 2. 의상 사진 섹션 -->
+            <div class="space-y-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2 text-indigo-400 font-bold"><i data-lucide="image" size="20"></i> 3D 렌더링 결과</div>
-                        <button id="downloadBtn" class="hidden p-2 bg-slate-800 text-indigo-400 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">
-                            <i data-lucide="download" size="18"></i>
-                        </button>
+                        <div class="flex items-center gap-2 text-emerald-600">
+                            <i data-lucide="shirt" size="20"></i>
+                            <h2 class="font-semibold text-lg">2. 의상 사진</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="colorToggle" class="w-4 h-4 text-indigo-600 rounded cursor-pointer" />
+                            <label for="colorToggle" class="text-sm font-medium text-slate-600 cursor-pointer">색상 변경</label>
+                        </div>
                     </div>
-                    <div class="flex-grow bg-slate-800 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-700 min-h-[300px]">
-                        <img id="resultImg" class="hidden max-h-full max-w-full object-contain" />
-                        <div id="resultPlaceholder" class="text-slate-600 text-xs font-medium italic">결과 이미지가 생성되면 여기에 표시됩니다.</div>
+                    
+                    <div id="clothingDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-300 transition-all overflow-hidden bg-slate-50 mb-4">
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <img id="clothingPreview" class="hidden h-full w-full object-cover" />
+                            <div id="colorOverlay" class="absolute inset-0 pointer-events-none transition-colors duration-200 hidden" style="mix-blend-mode: multiply; opacity: 0.7;"></div>
+                        </div>
+                        <div id="clothingPlaceholder" class="text-center p-4">
+                            <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="32"></i>
+                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
+                        </div>
+                        <input type="file" id="clothingInput" class="hidden" accept="image/*" />
                     </div>
-                    <div id="feedbackBox" class="hidden mt-4 p-4 bg-indigo-900/30 border border-indigo-500/30 rounded-xl">
-                        <div class="flex items-center gap-2 mb-1"><i data-lucide="message-square" size="14" class="text-indigo-400"></i><p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest">AI 디자인 분석</p></div>
-                        <p id="feedbackText" class="text-xs text-slate-300 leading-relaxed"></p>
+
+                    <!-- 색상 조절 슬라이더 -->
+                    <div id="colorControls" class="space-y-4 opacity-30 pointer-events-none transition-opacity duration-300">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>색상 (Hue)</span></div>
+                            <input type="range" id="hueRange" min="0" max="360" value="0" class="slider-hue w-full h-2 rounded-lg appearance-none cursor-pointer" />
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>명도 (Lightness)</span></div>
+                            <input type="range" id="lightnessRange" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+                        </div>
+                        <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                            <div id="colorIndicator" class="w-8 h-8 rounded-full border border-white shadow-sm bg-red-500"></div>
+                            <span id="hexLabel" class="text-xs font-bold text-slate-700 uppercase tracking-tighter">#FF0000 적용 중</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="w-full py-4 rounded-xl font-bold text-white bg-slate-300 cursor-not-allowed flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg">
+                    <i data-lucide="play" fill="currentColor" size="18"></i> 가상 피팅 시작
+                </button>
+            </div>
+
+            <!-- 3. 결과 섹션 -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:col-span-1">
+                <div class="flex items-center justify-between mb-4 text-indigo-600">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="image" size="20"></i>
+                        <h2 class="font-semibold text-lg">피팅 결과</h2>
+                    </div>
+                    <div id="resultActions" class="hidden flex gap-2">
+                        <button id="downloadBtn" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 border border-indigo-100"><i data-lucide="download" size="18"></i></button>
+                        <button id="resetBtn" class="p-2 text-slate-400 hover:text-slate-600"><i data-lucide="refresh-cw" size="18"></i></button>
+                    </div>
+                </div>
+
+                <div id="resultContainer" class="flex-grow bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden border border-slate-200 min-h-[450px]">
+                    <img id="resultImage" class="hidden h-full w-full object-contain" />
+                    <div id="resultPlaceholder" class="text-center p-8 opacity-30">
+                        <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="48"></i>
+                        <p class="text-slate-500 text-xs font-medium tracking-tighter leading-relaxed">이미지를 업로드하면<br>결과를 확인할 수 있습니다.</p>
+                    </div>
+                    <div id="loadingIndicator" class="hidden flex flex-col items-center">
+                        <div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                        <p class="text-slate-400 text-xs font-medium tracking-widest uppercase">Styling...</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="errorMsg" class="hidden mt-4 p-3 bg-red-50 border border-red-200 text-red-600 text-center text-xs rounded-xl"></div>
+        <footer class="mt-12 text-center text-slate-400 text-[10px] uppercase tracking-widest py-8">
+            AI Virtual Fitting Lab | 교육용 프로그램
+        </footer>
     </div>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
+        
+        // --- 선생님 설정 구간 ---
+        const MASTER_API_KEY = "AIzaSyDiEkprc-syY-4KbXxdqG8GCTKgBugPHPo"; // 여기에 발급받으신 Gemini API 키를 넣으세요
+        const CLASS_PASSWORD = "sw1234"; // 학생들이 입력할 비밀번호를 설정하세요
+        // -----------------------
 
-        const apiKey = ""; // API 키는 환경 변수에서 주입됩니다.
-        const canvas = document.getElementById('sketchCanvas');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        let isEraser = false;
-        let sketchData = null;
+        const personInput = document.getElementById('personInput');
+        const clothingInput = document.getElementById('clothingInput');
+        const personPreview = document.getElementById('personPreview');
+        const clothingPreview = document.getElementById('clothingPreview');
+        const colorOverlay = document.getElementById('colorOverlay');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultImage = document.getElementById('resultImage');
+        const loadingIndicator = document.getElementById('loadingIndicator');
 
-        // Canvas Setup
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let personBase64 = null;
+        let clothingBase64 = null;
 
-        function getCoords(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
-        }
-
-        function start(e) {
-            isDrawing = true;
-            const { x, y } = getCoords(e);
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            const { x, y } = getCoords(e);
-            ctx.strokeStyle = isEraser ? 'white' : '#334155';
-            ctx.lineWidth = isEraser ? 20 : 3;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
-
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', () => isDrawing = false);
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); });
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-
-        document.getElementById('eraserBtn').onclick = () => { isEraser = true; updateToolUI(); };
-        document.getElementById('penBtn').onclick = () => { isEraser = false; updateToolUI(); };
-        document.getElementById('clearBtn').onclick = () => { ctx.fillRect(0, 0, canvas.width, canvas.height); };
-
-        function updateToolUI() {
-            document.getElementById('eraserBtn').className = `p-2 rounded-lg ${isEraser ? 'bg-indigo-600 text-white' : 'bg-slate-100'}`;
-            document.getElementById('penBtn').className = `p-2 rounded-lg ${!isEraser ? 'bg-indigo-600 text-white' : 'bg-slate-100'}`;
-        }
-
-        // Image Handling
-        const fileInput = document.getElementById('fileInput');
-        const previewImg = document.getElementById('previewImg');
-        const placeholder = document.getElementById('placeholder');
-
-        document.getElementById('dropZone').onclick = () => fileInput.click();
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    sketchData = ev.target.result;
-                    previewImg.src = sketchData;
-                    previewImg.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        document.getElementById('confirmBtn').onclick = () => {
-            sketchData = canvas.toDataURL('image/png');
-            previewImg.src = sketchData;
-            previewImg.classList.remove('hidden');
-            placeholder.classList.add('hidden');
-        };
-
-        // AI Logic
-        async function apiCall(endpoint, payload) {
-            let retries = 5;
-            let delay = 1000;
-            while (retries > 0) {
-                try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${endpoint}?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) return await res.json();
-                } catch (e) {}
-                await new Promise(r => setTimeout(r, delay));
-                delay *= 2;
-                retries--;
-            }
-            throw new Error("API call failed");
-        }
-
-        document.getElementById('suggestBtn').onclick = async () => {
-            if (!sketchData) return;
-            try {
-                const res = await apiCall('gemini-2.5-flash-preview-09-2025:generateContent', {
-                    contents: [{ parts: [{ text: "Suggest 3D rendering styles for this sketch in keywords." }, { inlineData: { mimeType: "image/png", data: sketchData.split(',')[1] } }] }]
-                });
-                document.getElementById('promptInput').value = res.candidates[0].content.parts[0].text.trim();
-            } catch (e) { alert("추천 실패"); }
-        };
-
-        document.getElementById('transformBtn').onclick = async () => {
-            if (!sketchData) return;
-            const btn = document.getElementById('transformBtn');
-            const originalContent = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="refresh-cw" class="animate-spin"></i> 변환 중...';
-            lucide.createIcons();
-
-            try {
-                const res = await apiCall('gemini-2.5-flash-image-preview:generateContent', {
-                    contents: [{ parts: [{ text: `Photorealistic 3D render from sketch. Style: ${document.getElementById('promptInput').value || 'Cinematic'}` }, { inlineData: { mimeType: "image/png", data: sketchData.split(',')[1] } }] }],
-                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                });
-
-                const imgData = res.candidates[0].content.parts.find(p => p.inlineData)?.inlineData?.data;
-                if (imgData) {
-                    const fullUrl = `data:image/png;base64,${imgData}`;
-                    document.getElementById('resultImg').src = fullUrl;
-                    document.getElementById('resultImg').classList.remove('hidden');
-                    document.getElementById('resultPlaceholder').classList.add('hidden');
-                    document.getElementById('downloadBtn').classList.remove('hidden');
-                    
-                    // Get feedback
-                    const fbRes = await apiCall('gemini-2.5-flash-preview-09-2025:generateContent', {
-                        contents: [{ parts: [{ text: "Critique this 3D render in Korean and suggest one improvement." }, { inlineData: { mimeType: "image/png", data: imgData } }] }]
-                    });
-                    document.getElementById('feedbackText').innerText = fbRes.candidates[0].content.parts[0].text;
-                    document.getElementById('feedbackBox').classList.remove('hidden');
+        function handleFile(file, type) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = e.target.result;
+                if (type === 'person') {
+                    personBase64 = data;
+                    personPreview.src = data;
+                    personPreview.classList.remove('hidden');
+                    document.getElementById('personPlaceholder').classList.add('hidden');
+                } else {
+                    clothingBase64 = data;
+                    clothingPreview.src = data;
+                    clothingPreview.classList.remove('hidden');
+                    document.getElementById('clothingPlaceholder').classList.add('hidden');
                 }
-            } catch (e) {
-                document.getElementById('errorMsg').innerText = "오류가 발생했습니다. 다시 시도해 주세요.";
-                document.getElementById('errorMsg').classList.remove('hidden');
+                checkInputs();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function checkInputs() {
+            if (personBase64 && clothingBase64) {
+                generateBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
+                generateBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+        }
+
+        document.getElementById('personDropZone').onclick = () => personInput.click();
+        document.getElementById('clothingDropZone').onclick = () => clothingInput.click();
+        personInput.onchange = (e) => handleFile(e.target.files[0], 'person');
+        clothingInput.onchange = (e) => handleFile(e.target.files[0], 'clothing');
+
+        const colorToggle = document.getElementById('colorToggle');
+        const colorControls = document.getElementById('colorControls');
+        const hueRange = document.getElementById('hueRange');
+        const lightnessRange = document.getElementById('lightnessRange');
+
+        colorToggle.onchange = () => {
+            const active = colorToggle.checked;
+            colorControls.style.opacity = active ? "1" : "0.3";
+            colorControls.style.pointerEvents = active ? "auto" : "none";
+            colorOverlay.classList.toggle('hidden', !active);
+            updateColor();
+        };
+
+        function updateColor() {
+            const h = hueRange.value;
+            const l = lightnessRange.value;
+            const hsl = `hsl(${h}, 100%, ${l}%)`;
+            colorOverlay.style.backgroundColor = hsl;
+            document.getElementById('colorIndicator').style.backgroundColor = hsl;
+            document.getElementById('hexLabel').innerText = `${hslToHex(h, 100, l).toUpperCase()} 적용 중`;
+        }
+
+        hueRange.oninput = updateColor;
+        lightnessRange.oninput = updateColor;
+
+        function hslToHex(h, s, l) {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+
+        generateBtn.onclick = async () => {
+            if (!personBase64 || !clothingBase64) return;
+
+            // 비밀번호 확인 로직
+            const userInput = prompt("체험 비밀번호를 입력하세요:");
+            if (userInput !== CLASS_PASSWORD) {
+                alert("비밀번호가 틀렸습니다. 선생님께 문의하세요.");
+                return;
+            }
+
+            if (!MASTER_API_KEY) {
+                alert("선생님! 코드 상단에 API 키를 먼저 입력해주세요.");
+                return;
+            }
+
+            generateBtn.disabled = true;
+            loadingIndicator.classList.remove('hidden');
+            document.getElementById('resultPlaceholder').classList.add('hidden');
+            resultImage.classList.add('hidden');
+
+            const hex = hslToHex(hueRange.value, 100, lightnessRange.value);
+            let promptText = "Create a professional fashion photograph of the person in the first image wearing the exact clothing from the second image. Full body shot, white studio background.";
+            if (colorToggle.checked) {
+                promptText += ` The clothing color must be exactly ${hex}.`;
+            }
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MASTER_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: promptText },
+                                { inlineData: { mimeType: "image/png", data: personBase64.split(',')[1] } },
+                                { inlineData: { mimeType: "image/png", data: clothingBase64.split(',')[1] } }
+                            ]
+                        }],
+                        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                    })
+                });
+
+                const data = await res.json();
+                const outBase64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (outBase64) {
+                    resultImage.src = `data:image/png;base64,${outBase64}`;
+                    resultImage.classList.remove('hidden');
+                    document.getElementById('resultActions').classList.remove('hidden');
+                } else {
+                    alert("생성에 실패했습니다. 다시 시도해보세요.");
+                }
+            } catch (err) {
+                alert("에러: " + err.message);
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                lucide.createIcons();
+                loadingIndicator.classList.add('hidden');
+                generateBtn.disabled = false;
             }
         };
 
         document.getElementById('downloadBtn').onclick = () => {
-            const link = document.createElement('a');
-            link.href = document.getElementById('resultImg').src;
-            link.download = `AI-Design-${Date.now()}.png`;
-            link.click();
+            const a = document.createElement('a');
+            a.href = resultImage.src;
+            a.download = `fitting-result.png`;
+            a.click();
         };
+
+        document.getElementById('resetBtn').onclick = () => location.reload();
     </script>
 </body>
 </html>
