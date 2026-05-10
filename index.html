@@ -3,17 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 가상 피팅룸 - 학생 체험용</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; }<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 가상 피팅룸 - 학생 체험용</title>
+    <title>AI 가상 피팅룸 - 실습용</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -28,402 +18,121 @@
     <div class="max-w-6xl mx-auto">
         <header class="mb-8 text-center">
             <h1 class="text-3xl md:text-4xl font-bold text-indigo-600 mb-2 tracking-tight">AI 가상 피팅룸</h1>
-            <p class="text-slate-500 text-sm md:text-base">선생님이 알려준 비밀번호를 입력하고 체험을 시작하세요!</p>
+            <p class="text-slate-500 text-sm md:text-base font-medium">선생님이 공유해준 비밀번호를 입력해 체험해보세요!</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- 1. 인물 사진 섹션 -->
-            <div class="space-y-6">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2 mb-4 text-indigo-600">
-                        <i data-lucide="user" size="20"></i>
-                        <h2 class="font-semibold text-lg">1. 인물 사진</h2>
+            <!-- 1. 인물 사진 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-2 mb-4 text-indigo-600">
+                    <i data-lucide="user" size="20"></i>
+                    <h2 class="font-bold text-lg">1. 인물 사진 업로드</h2>
+                </div>
+                <div id="personDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-400 transition-all overflow-hidden bg-slate-50">
+                    <img id="personPreview" class="hidden h-full w-full object-cover" />
+                    <div id="personPlaceholder" class="text-center p-4">
+                        <i data-lucide="camera" class="mx-auto text-slate-400 mb-2" size="40"></i>
+                        <p class="text-xs text-slate-500 font-bold">인물 사진을 선택하거나<br>여기에 끌어다 놓으세요</p>
                     </div>
-                    <div id="personDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 transition-all overflow-hidden bg-slate-50">
-                        <img id="personPreview" class="hidden h-full w-full object-cover" />
-                        <div id="personPlaceholder" class="text-center p-4">
-                            <i data-lucide="camera" class="mx-auto text-slate-400 mb-2" size="32"></i>
-                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
-                        </div>
-                        <input type="file" id="personInput" class="hidden" accept="image/*" />
-                    </div>
+                    <input type="file" id="personInput" class="hidden" accept="image/*" />
                 </div>
             </div>
 
-            <!-- 2. 의상 사진 섹션 -->
+            <!-- 2. 의상 선택 및 설정 -->
             <div class="space-y-6">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2 text-emerald-600">
                             <i data-lucide="shirt" size="20"></i>
-                            <h2 class="font-semibold text-lg">2. 의상 사진</h2>
+                            <h2 class="font-bold text-lg">2. 의상 사진 업로드</h2>
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="checkbox" id="colorToggle" class="w-4 h-4 text-indigo-600 rounded cursor-pointer" />
-                            <label for="colorToggle" class="text-sm font-medium text-slate-600 cursor-pointer">색상 변경</label>
+                            <label for="colorToggle" class="text-sm font-bold text-slate-600 cursor-pointer">색상 변경</label>
                         </div>
                     </div>
                     
-                    <div id="clothingDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-300 transition-all overflow-hidden bg-slate-50 mb-4">
-                        <div class="relative w-full h-full flex items-center justify-center">
-                            <img id="clothingPreview" class="hidden h-full w-full object-cover" />
-                            <div id="colorOverlay" class="absolute inset-0 pointer-events-none transition-colors duration-200 hidden" style="mix-blend-mode: multiply; opacity: 0.7;"></div>
-                        </div>
+                    <div id="clothingDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 transition-all overflow-hidden bg-slate-50 mb-4">
+                        <img id="clothingPreview" class="hidden h-full w-full object-cover" />
+                        <div id="colorOverlay" class="absolute inset-0 pointer-events-none hidden" style="mix-blend-mode: multiply; opacity: 0.6;"></div>
                         <div id="clothingPlaceholder" class="text-center p-4">
-                            <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="32"></i>
-                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
+                            <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="40"></i>
+                            <p class="text-xs text-slate-500 font-bold">의상 사진을 선택하거나<br>여기에 끌어다 놓으세요</p>
                         </div>
                         <input type="file" id="clothingInput" class="hidden" accept="image/*" />
                     </div>
 
-                    <!-- 색상 조절 슬라이더 -->
+                    <!-- 색상 조절 -->
                     <div id="colorControls" class="space-y-4 opacity-30 pointer-events-none transition-opacity duration-300">
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>색상 (Hue)</span></div>
-                            <input type="range" id="hueRange" min="0" max="360" value="0" class="slider-hue w-full h-2 rounded-lg appearance-none cursor-pointer" />
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Hue (색상)</label>
+                            <input type="range" id="hueRange" min="0" max="360" value="0" class="slider-hue w-full h-3 rounded-lg appearance-none cursor-pointer" />
                         </div>
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>명도 (Lightness)</span></div>
-                            <input type="range" id="lightnessRange" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
-                        </div>
-                        <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-100">
-                            <div id="colorIndicator" class="w-8 h-8 rounded-full border border-white shadow-sm bg-red-500"></div>
-                            <span id="hexLabel" class="text-xs font-bold text-slate-700 uppercase tracking-tighter">#FF0000 적용 중</span>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div id="colorIndicator" class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-red-500"></div>
+                            <span id="hexLabel" class="text-xs font-black text-slate-700 uppercase">#FF0000 적용 예정</span>
                         </div>
                     </div>
                 </div>
 
-                <button id="generateBtn" class="w-full py-4 rounded-xl font-bold text-white bg-slate-300 cursor-not-allowed flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg">
-                    <i data-lucide="play" fill="currentColor" size="18"></i> 가상 피팅 시작
+                <button id="generateBtn" class="w-full py-5 rounded-2xl font-black text-white bg-slate-300 cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl">
+                    <i data-lucide="sparkles" size="20"></i> 가상 피팅 시작하기
                 </button>
             </div>
 
-            <!-- 3. 결과 섹션 -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:col-span-1">
-                <div class="flex items-center justify-between mb-4 text-indigo-600">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="image" size="20"></i>
-                        <h2 class="font-semibold text-lg">피팅 결과</h2>
+            <!-- 3. 결과 창 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 min-h-[500px] flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2 text-indigo-600">
+                        <i data-lucide="sparkles" size="20"></i>
+                        <h2 class="font-bold text-lg">피팅 결과</h2>
                     </div>
-                    <div id="resultActions" class="hidden flex gap-2">
-                        <button id="downloadBtn" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 border border-indigo-100"><i data-lucide="download" size="18"></i></button>
-                        <button id="resetBtn" class="p-2 text-slate-400 hover:text-slate-600"><i data-lucide="refresh-cw" size="18"></i></button>
-                    </div>
+                    <button id="resetBtn" class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="refresh-cw" size="18"></i></button>
                 </div>
 
-                <div id="resultContainer" class="flex-grow bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden border border-slate-200 min-h-[450px]">
+                <div id="resultContainer" class="flex-grow bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden border border-slate-200">
                     <img id="resultImage" class="hidden h-full w-full object-contain" />
-                    <div id="resultPlaceholder" class="text-center p-8 opacity-30">
-                        <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="48"></i>
-                        <p class="text-slate-500 text-xs font-medium tracking-tighter leading-relaxed">이미지를 업로드하면<br>결과를 확인할 수 있습니다.</p>
+                    <div id="resultPlaceholder" class="text-center p-8 opacity-40">
+                        <i data-lucide="layout-template" class="mx-auto text-slate-300 mb-3" size="64"></i>
+                        <p class="text-slate-500 text-sm font-bold leading-relaxed">준비가 완료되면<br>여기에 피팅 결과가 나타납니다.</p>
                     </div>
                     <div id="loadingIndicator" class="hidden flex flex-col items-center">
-                        <div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-                        <p class="text-slate-400 text-xs font-medium tracking-widest uppercase">Styling...</p>
+                        <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                        <p class="text-indigo-600 text-xs font-black tracking-widest uppercase animate-pulse">AI Fitting...</p>
                     </div>
                 </div>
-            </div>
-        </div>
-        <footer class="mt-12 text-center text-slate-400 text-[10px] uppercase tracking-widest py-8">
-            AI Virtual Fitting Lab | 교육용 프로그램
-        </footer>
-    </div>
-
-    <script>
-        lucide.createIcons();
-        
-        // --- 선생님 설정 구간 ---
-        const MASTER_API_KEY = "AIzaSyDiEkprc-syY-4KbXxdqG8GCTKgBugPHPo"; // 👈 여기에 다시 키를 넣어주세요!
-        const CLASS_PASSWORD = "sw1234"; // 👈 수업용 비밀번호
-        // -----------------------
-
-        const personInput = document.getElementById('personInput');
-        const clothingInput = document.getElementById('clothingInput');
-        const personPreview = document.getElementById('personPreview');
-        const clothingPreview = document.getElementById('clothingPreview');
-        const colorOverlay = document.getElementById('colorOverlay');
-        const generateBtn = document.getElementById('generateBtn');
-        const resultImage = document.getElementById('resultImage');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-
-        let personBase64 = null;
-        let clothingBase64 = null;
-
-        function handleFile(file, type) {
-            if (!file || !file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const data = e.target.result;
-                if (type === 'person') {
-                    personBase64 = data;
-                    personPreview.src = data;
-                    personPreview.classList.remove('hidden');
-                    document.getElementById('personPlaceholder').classList.add('hidden');
-                } else {
-                    clothingBase64 = data;
-                    clothingPreview.src = data;
-                    clothingPreview.classList.remove('hidden');
-                    document.getElementById('clothingPlaceholder').classList.add('hidden');
-                }
-                checkInputs();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function checkInputs() {
-            if (personBase64 && clothingBase64) {
-                generateBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
-                generateBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-            }
-        }
-
-        document.getElementById('personDropZone').onclick = () => personInput.click();
-        document.getElementById('clothingDropZone').onclick = () => clothingInput.click();
-        personInput.onchange = (e) => handleFile(e.target.files[0], 'person');
-        clothingInput.onchange = (e) => handleFile(e.target.files[0], 'clothing');
-
-        const colorToggle = document.getElementById('colorToggle');
-        const colorControls = document.getElementById('colorControls');
-        const hueRange = document.getElementById('hueRange');
-        const lightnessRange = document.getElementById('lightnessRange');
-
-        colorToggle.onchange = () => {
-            const active = colorToggle.checked;
-            colorControls.style.opacity = active ? "1" : "0.3";
-            colorControls.style.pointerEvents = active ? "auto" : "none";
-            colorOverlay.classList.toggle('hidden', !active);
-            updateColor();
-        };
-
-        function updateColor() {
-            const h = hueRange.value;
-            const l = lightnessRange.value;
-            const hsl = `hsl(${h}, 100%, ${l}%)`;
-            colorOverlay.style.backgroundColor = hsl;
-            document.getElementById('colorIndicator').style.backgroundColor = hsl;
-            document.getElementById('hexLabel').innerText = `${hslToHex(h, 100, l).toUpperCase()} 적용 중`;
-        }
-
-        hueRange.oninput = updateColor;
-        lightnessRange.oninput = updateColor;
-
-        function hslToHex(h, s, l) {
-            l /= 100;
-            const a = s * Math.min(l, 1 - l) / 100;
-            const f = n => {
-                const k = (n + h / 30) % 12;
-                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-                return Math.round(255 * color).toString(16).padStart(2, '0');
-            };
-            return `#${f(0)}${f(8)}${f(4)}`;
-        }
-
-        generateBtn.onclick = async () => {
-            if (!personBase64 || !clothingBase64) return;
-
-            const userInput = prompt("체험 비밀번호를 입력하세요:");
-            if (userInput !== CLASS_PASSWORD) {
-                alert("비밀번호가 틀렸습니다. 선생님께 문의하세요.");
-                return;
-            }
-
-            if (!MASTER_API_KEY) {
-                alert("선생님! 코드 상단 MASTER_API_KEY에 API 키를 넣어주세요.");
-                return;
-            }
-
-            generateBtn.disabled = true;
-            loadingIndicator.classList.remove('hidden');
-            document.getElementById('resultPlaceholder').classList.add('hidden');
-            resultImage.classList.add('hidden');
-
-            const hex = hslToHex(hueRange.value, 100, lightnessRange.value);
-            let promptText = "Create a professional fashion photograph. Person from first image wearing the exact clothing from second image. Clean studio background.";
-            if (colorToggle.checked) {
-                promptText += ` Make the clothing color ${hex}.`;
-            }
-
-            try {
-                // 모델명을 gemini-2.0-flash-exp로 변경하고 변수명을 MASTER_API_KEY로 통일했습니다.
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${MASTER_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: promptText },
-                                { inlineData: { mimeType: "image/png", data: personBase64.split(',')[1] } },
-                                { inlineData: { mimeType: "image/png", data: clothingBase64.split(',')[1] } }
-                            ]
-                        }],
-                        generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                    })
-                });
-
-                const data = await res.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-
-                const outBase64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-
-                if (outBase64) {
-                    resultImage.src = `data:image/png;base64,${outBase64}`;
-                    resultImage.classList.remove('hidden');
-                    document.getElementById('resultActions').classList.remove('hidden');
-                } else {
-                    alert("이미지 생성에 실패했습니다. (Gemini 모델 응답 없음)");
-                }
-            } catch (err) {
-                alert("에러: " + err.message);
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                generateBtn.disabled = false;
-            }
-        };
-
-        document.getElementById('downloadBtn').onclick = () => {
-            const a = document.createElement('a');
-            a.href = resultImage.src;
-            a.download = `fitting-result.png`;
-            a.click();
-        };
-
-        document.getElementById('resetBtn').onclick = () => location.reload();
-    </script>
-</body>
-</html>
-        .slider-hue {
-            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-        }
-    </style>
-</head>
-<body class="bg-slate-50 p-4 md:p-8 text-slate-900 min-h-screen">
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-indigo-600 mb-2 tracking-tight">AI 가상 피팅룸</h1>
-            <p class="text-slate-500 text-sm md:text-base">선생님이 알려준 비밀번호를 입력하고 체험을 시작하세요!</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- 1. 인물 사진 섹션 -->
-            <div class="space-y-6">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2 mb-4 text-indigo-600">
-                        <i data-lucide="user" size="20"></i>
-                        <h2 class="font-semibold text-lg">1. 인물 사진</h2>
-                    </div>
-                    <div id="personDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 transition-all overflow-hidden bg-slate-50">
-                        <img id="personPreview" class="hidden h-full w-full object-cover" />
-                        <div id="personPlaceholder" class="text-center p-4">
-                            <i data-lucide="camera" class="mx-auto text-slate-400 mb-2" size="32"></i>
-                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
-                        </div>
-                        <input type="file" id="personInput" class="hidden" accept="image/*" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. 의상 사진 섹션 -->
-            <div class="space-y-6">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2 text-emerald-600">
-                            <i data-lucide="shirt" size="20"></i>
-                            <h2 class="font-semibold text-lg">2. 의상 사진</h2>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="colorToggle" class="w-4 h-4 text-indigo-600 rounded cursor-pointer" />
-                            <label for="colorToggle" class="text-sm font-medium text-slate-600 cursor-pointer">색상 변경</label>
-                        </div>
-                    </div>
-                    
-                    <div id="clothingDropZone" class="relative aspect-[3/4] rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-300 transition-all overflow-hidden bg-slate-50 mb-4">
-                        <div class="relative w-full h-full flex items-center justify-center">
-                            <img id="clothingPreview" class="hidden h-full w-full object-cover" />
-                            <div id="colorOverlay" class="absolute inset-0 pointer-events-none transition-colors duration-200 hidden" style="mix-blend-mode: multiply; opacity: 0.7;"></div>
-                        </div>
-                        <div id="clothingPlaceholder" class="text-center p-4">
-                            <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="32"></i>
-                            <p class="text-xs text-slate-500 font-medium">클릭하거나 이미지를<br>여기에 붙여넣으세요</p>
-                        </div>
-                        <input type="file" id="clothingInput" class="hidden" accept="image/*" />
-                    </div>
-
-                    <!-- 색상 조절 슬라이더 -->
-                    <div id="colorControls" class="space-y-4 opacity-30 pointer-events-none transition-opacity duration-300">
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>색상 (Hue)</span></div>
-                            <input type="range" id="hueRange" min="0" max="360" value="0" class="slider-hue w-full h-2 rounded-lg appearance-none cursor-pointer" />
-                        </div>
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>명도 (Lightness)</span></div>
-                            <input type="range" id="lightnessRange" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
-                        </div>
-                        <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-100">
-                            <div id="colorIndicator" class="w-8 h-8 rounded-full border border-white shadow-sm bg-red-500"></div>
-                            <span id="hexLabel" class="text-xs font-bold text-slate-700 uppercase tracking-tighter">#FF0000 적용 중</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="generateBtn" class="w-full py-4 rounded-xl font-bold text-white bg-slate-300 cursor-not-allowed flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg">
-                    <i data-lucide="play" fill="currentColor" size="18"></i> 가상 피팅 시작
+                <button id="downloadBtn" class="hidden mt-4 w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="download" size="16"></i> 이미지 저장하기
                 </button>
             </div>
-
-            <!-- 3. 결과 섹션 -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col lg:col-span-1">
-                <div class="flex items-center justify-between mb-4 text-indigo-600">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="image" size="20"></i>
-                        <h2 class="font-semibold text-lg">피팅 결과</h2>
-                    </div>
-                    <div id="resultActions" class="hidden flex gap-2">
-                        <button id="downloadBtn" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 border border-indigo-100"><i data-lucide="download" size="18"></i></button>
-                        <button id="resetBtn" class="p-2 text-slate-400 hover:text-slate-600"><i data-lucide="refresh-cw" size="18"></i></button>
-                    </div>
-                </div>
-
-                <div id="resultContainer" class="flex-grow bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden border border-slate-200 min-h-[450px]">
-                    <img id="resultImage" class="hidden h-full w-full object-contain" />
-                    <div id="resultPlaceholder" class="text-center p-8 opacity-30">
-                        <i data-lucide="image" class="mx-auto text-slate-400 mb-2" size="48"></i>
-                        <p class="text-slate-500 text-xs font-medium tracking-tighter leading-relaxed">이미지를 업로드하면<br>결과를 확인할 수 있습니다.</p>
-                    </div>
-                    <div id="loadingIndicator" class="hidden flex flex-col items-center">
-                        <div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-                        <p class="text-slate-400 text-xs font-medium tracking-widest uppercase">Styling...</p>
-                    </div>
-                </div>
-            </div>
         </div>
-        <footer class="mt-12 text-center text-slate-400 text-[10px] uppercase tracking-widest py-8">
-            AI Virtual Fitting Lab | 교육용 프로그램
-        </footer>
     </div>
 
     <script>
         lucide.createIcons();
         
-        // --- 선생님 설정 구간 ---
-        const MASTER_API_KEY = "AIzaSyDiEkprc-syY-4KbXxdqG8GCTKgBugPHPo"; // 여기에 발급받으신 Gemini API 키를 넣으세요
-        const CLASS_PASSWORD = "sw1234"; // 학생들이 입력할 비밀번호를 설정하세요
-        // -----------------------
+        // --- [선생님 설정 영역] ---
+        const MASTER_API_KEY = "AIzaSyDiEkprc-syY-4KbXxdqG8GCTKgBugPHPo"; // 👈 여기에 선생님의 API 키를 입력해주세요!
+        const CLASS_PASSWORD = "sw1234"; 
+        // ------------------------
 
         const personInput = document.getElementById('personInput');
         const clothingInput = document.getElementById('clothingInput');
         const personPreview = document.getElementById('personPreview');
         const clothingPreview = document.getElementById('clothingPreview');
-        const colorOverlay = document.getElementById('colorOverlay');
         const generateBtn = document.getElementById('generateBtn');
-        const resultImage = document.getElementById('resultImage');
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultImage = document.getElementById('resultImage');
 
         let personBase64 = null;
         let clothingBase64 = null;
 
+        // 드롭존 클릭 이벤트
+        document.getElementById('personDropZone').onclick = () => personInput.click();
+        document.getElementById('clothingDropZone').onclick = () => clothingInput.click();
+
+        // 파일 처리 함수
         function handleFile(file, type) {
             if (!file || !file.type.startsWith('image/')) return;
             const reader = new FileReader();
@@ -440,27 +149,26 @@
                     clothingPreview.classList.remove('hidden');
                     document.getElementById('clothingPlaceholder').classList.add('hidden');
                 }
-                checkInputs();
+                checkReady();
             };
             reader.readAsDataURL(file);
         }
 
-        function checkInputs() {
+        personInput.onchange = (e) => handleFile(e.target.files[0], 'person');
+        clothingInput.onchange = (e) => handleFile(e.target.files[0], 'clothing');
+
+        function checkReady() {
             if (personBase64 && clothingBase64) {
                 generateBtn.classList.remove('bg-slate-300', 'cursor-not-allowed');
                 generateBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
             }
         }
 
-        document.getElementById('personDropZone').onclick = () => personInput.click();
-        document.getElementById('clothingDropZone').onclick = () => clothingInput.click();
-        personInput.onchange = (e) => handleFile(e.target.files[0], 'person');
-        clothingInput.onchange = (e) => handleFile(e.target.files[0], 'clothing');
-
+        // 색상 조절 로직
         const colorToggle = document.getElementById('colorToggle');
         const colorControls = document.getElementById('colorControls');
         const hueRange = document.getElementById('hueRange');
-        const lightnessRange = document.getElementById('lightnessRange');
+        const colorOverlay = document.getElementById('colorOverlay');
 
         colorToggle.onchange = () => {
             const active = colorToggle.checked;
@@ -472,15 +180,12 @@
 
         function updateColor() {
             const h = hueRange.value;
-            const l = lightnessRange.value;
-            const hsl = `hsl(${h}, 100%, ${l}%)`;
+            const hsl = `hsl(${h}, 100%, 50%)`;
             colorOverlay.style.backgroundColor = hsl;
             document.getElementById('colorIndicator').style.backgroundColor = hsl;
-            document.getElementById('hexLabel').innerText = `${hslToHex(h, 100, l).toUpperCase()} 적용 중`;
+            document.getElementById('hexLabel').innerText = `${hslToHex(h, 100, 50).toUpperCase()} 적용 예정`;
         }
-
         hueRange.oninput = updateColor;
-        lightnessRange.oninput = updateColor;
 
         function hslToHex(h, s, l) {
             l /= 100;
@@ -493,34 +198,27 @@
             return `#${f(0)}${f(8)}${f(4)}`;
         }
 
+        // 생성 버튼 클릭
         generateBtn.onclick = async () => {
             if (!personBase64 || !clothingBase64) return;
+            if (!MASTER_API_KEY) { alert("API 키가 비어있습니다. 코드 상단에서 설정해주세요."); return; }
 
-            // 비밀번호 확인 로직
-            const userInput = prompt("체험 비밀번호를 입력하세요:");
-            if (userInput !== CLASS_PASSWORD) {
-                alert("비밀번호가 틀렸습니다. 선생님께 문의하세요.");
-                return;
-            }
-
-            if (!MASTER_API_KEY) {
-                alert("선생님! 코드 상단에 API 키를 먼저 입력해주세요.");
-                return;
-            }
+            const pw = prompt("체험 비밀번호를 입력하세요:");
+            if (pw !== CLASS_PASSWORD) { alert("비밀번호가 올바르지 않습니다."); return; }
 
             generateBtn.disabled = true;
             loadingIndicator.classList.remove('hidden');
-            document.getElementById('resultPlaceholder').classList.add('hidden');
             resultImage.classList.add('hidden');
+            document.getElementById('resultPlaceholder').classList.add('hidden');
+            document.getElementById('downloadBtn').classList.add('hidden');
 
-            const hex = hslToHex(hueRange.value, 100, lightnessRange.value);
-            let promptText = "Create a professional fashion photograph of the person in the first image wearing the exact clothing from the second image. Full body shot, white studio background.";
-            if (colorToggle.checked) {
-                promptText += ` The clothing color must be exactly ${hex}.`;
-            }
+            const hex = hslToHex(hueRange.value, 100, 50);
+            let promptText = "Generate a high-quality fashion photograph. The person in the first image should be wearing the garment from the second image perfectly. Professional lighting, editorial style.";
+            if (colorToggle.checked) promptText += ` Change the garment color to exactly ${hex}.`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                // [수정 핵심] 모델명을 최신 preview 버전으로, 변수명을 MASTER_API_KEY로 확정
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${MASTER_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -535,18 +233,24 @@
                     })
                 });
 
-                const data = await res.json();
-                const outBase64 = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                const result = await response.json();
+                
+                if (result.error) throw new Error(result.error.message);
 
-                if (outBase64) {
-                    resultImage.src = `data:image/png;base64,${outBase64}`;
+                const imagePart = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                
+                if (imagePart) {
+                    resultImage.src = `data:image/png;base64,${imagePart.inlineData.data}`;
                     resultImage.classList.remove('hidden');
-                    document.getElementById('resultActions').classList.remove('hidden');
+                    document.getElementById('downloadBtn').classList.remove('hidden');
                 } else {
-                    alert("생성에 실패했습니다. 다시 시도해보세요.");
+                    throw new Error("이미지 생성에 실패했습니다. (결과 데이터 없음)");
                 }
-            } catch (err) {
-                alert("에러: " + err.message);
+
+            } catch (error) {
+                console.error(error);
+                alert("에러 발생: " + error.message);
+                document.getElementById('resultPlaceholder').classList.remove('hidden');
             } finally {
                 loadingIndicator.classList.add('hidden');
                 generateBtn.disabled = false;
@@ -554,10 +258,10 @@
         };
 
         document.getElementById('downloadBtn').onclick = () => {
-            const a = document.createElement('a');
-            a.href = resultImage.src;
-            a.download = `fitting-result.png`;
-            a.click();
+            const link = document.createElement('a');
+            link.href = resultImage.src;
+            link.download = 'fitting_result.png';
+            link.click();
         };
 
         document.getElementById('resetBtn').onclick = () => location.reload();
