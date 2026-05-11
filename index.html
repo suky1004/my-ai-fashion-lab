@@ -275,7 +275,7 @@ lucide.createIcons();
 // 선생님 설정
 // =========================
 
-const MASTER_API_KEY = "AIzaSyDiEkprc-syY-4KbXxdqG8GCTKgBugPHPo";
+const MASTER_API_KEY = "AIzaSyDrQBN9OqwqWqal9uelyE_LCQPRivoWEeQ";
 
 const CLASS_PASSWORD = "sw1234";
 
@@ -329,6 +329,15 @@ setupDropZone('personDropZone', 'person');
 
 setupDropZone('clothingDropZone', 'clothing');
 
+// 추가할 부분 시작
+personInput.addEventListener('change', (e) => {
+    handleFile(e.target.files[0], 'person');
+});
+
+clothingInput.addEventListener('change', (e) => {
+    handleFile(e.target.files[0], 'clothing');
+});
+// 추가할 부분 끝
 
 function setupDropZone(id, type) {
 
