@@ -49,27 +49,6 @@ body {
     </header>
 
 
-    <!-- API KEY -->
-    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8">
-
-        <label class="block text-sm font-bold text-slate-700 mb-2">
-            Gemini API Key 입력
-        </label>
-
-        <input
-            type="password"
-            id="apiKeyInput"
-            placeholder="AIza..."
-            class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-
-        <p class="text-xs text-slate-400 mt-2">
-            본인의 Gemini API 키를 입력하세요.
-        </p>
-
-    </div>
-
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         <!-- 인물 사진 -->
@@ -355,8 +334,6 @@ lucide.createIcons();
 // =====================
 // 요소
 // =====================
-
-const apiKeyInput = document.getElementById('apiKeyInput');
 
 const personInput = document.getElementById('personInput');
 
@@ -655,11 +632,11 @@ function hslToHex(h, s, l) {
 
 generateBtn.onclick = async () => {
 
-    const apiKey = apiKeyInput.value.trim();
+    const apiKey = prompt('Gemini API Key를 입력하세요');
 
     if (!apiKey) {
 
-        alert('Gemini API 키를 입력해주세요.');
+        alert('API 키가 필요합니다.');
 
         return;
     }
@@ -734,7 +711,7 @@ generateBtn.onclick = async () => {
         ],
 
         generationConfig: {
-            responseModalities: ['IMAGE']
+            responseModalities: ['TEXT', 'IMAGE']
         }
     })
 }
